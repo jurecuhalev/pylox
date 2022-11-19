@@ -50,3 +50,19 @@ class TokenType(Enum):
 
     # End of file
     EOF = auto()
+
+
+class Token:
+    type: TokenType
+    lexeme: str
+    literal: dict
+    line: int
+
+    def __init__(self, _type: TokenType, lexeme: str, literal: dict, line: int):
+        self.type = _type
+        self.lexeme = lexeme
+        self.literal = literal
+        self.line = line
+
+    def __repr__(self):
+        return f"{self.type} {self.lexeme} {self.literal}"

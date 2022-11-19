@@ -1,23 +1,8 @@
 import click
 
 from scanner import Scanner
-from token_type import TokenType
+from tokens import Token, TokenType
 
-
-class Token:
-    type: TokenType
-    lexeme: str
-    literal: dict
-    line: int
-
-    def __init__(self, _type: TokenType, lexeme: str, literal: dict, line: int):
-        self.type = _type
-        self.lexeme = lexeme
-        self.literal = literal
-        self.line = line
-
-    def __repr__(self):
-        return f"{self.type} {self.lexeme} {self.literal}"
 
 
 class Lox:
@@ -48,7 +33,7 @@ class Lox:
         self.report(line, "", message)
 
     def report(self, line, where, message):
-        print(f"[line {line}] Error {where}: message")
+        print(f"[line {line}] Error {where}: {message}")
 
 
 @click.command()
