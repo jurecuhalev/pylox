@@ -1,11 +1,28 @@
 import click
 
-
-class Token(object):
-    pass
+from token_type import TokenType
 
 
-class Scanner(object):
+class Token:
+    token_type: TokenType
+    lexeme: str
+    literal: dict
+    line: int
+
+    def __init__(self, token_type: TokenType, lexeme: str, literal: dict, line: int):
+        self.token_type = token_type
+        self.lexeme = lexeme
+        self.literal = literal
+        self.line = line
+
+    def __repr__(self):
+        return f"{self.token_type} {self.lexeme} {self.literal}"
+
+
+class Scanner:
+    source: str
+    tokens: list[Token]
+
     def __init__(self, source: str):
         self.source = source
 
@@ -13,12 +30,12 @@ class Scanner(object):
         pass
 
 
-class Lox(object):
+class Lox:
     had_error = False
 
     def run_file(self, script):
-        with open(script, 'r') as f:
-            source = script.read().decode()
+        with open(script) as f:
+            source = f.read()
 
         self.run(source)
         if self.had_error:
@@ -42,6 +59,7 @@ class Lox(object):
 
     def report(self, line, where, message):
         print(f"[line {line}] Error {where}: message")
+
 
 @click.command()
 @click.argument("script", required=False)
