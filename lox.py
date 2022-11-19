@@ -1,8 +1,7 @@
 import click
 
 from scanner import Scanner
-from tokens import Token, TokenType
-
+from tokens import Token
 
 
 class Lox:
