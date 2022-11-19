@@ -1,33 +1,23 @@
 import click
 
+from scanner import Scanner
 from token_type import TokenType
 
 
 class Token:
-    token_type: TokenType
+    type: TokenType
     lexeme: str
     literal: dict
     line: int
 
-    def __init__(self, token_type: TokenType, lexeme: str, literal: dict, line: int):
-        self.token_type = token_type
+    def __init__(self, _type: TokenType, lexeme: str, literal: dict, line: int):
+        self.type = _type
         self.lexeme = lexeme
         self.literal = literal
         self.line = line
 
     def __repr__(self):
-        return f"{self.token_type} {self.lexeme} {self.literal}"
-
-
-class Scanner:
-    source: str
-    tokens: list[Token]
-
-    def __init__(self, source: str):
-        self.source = source
-
-    def scan_tokens(self) -> list[Token]:
-        pass
+        return f"{self.type} {self.lexeme} {self.literal}"
 
 
 class Lox:
@@ -48,7 +38,7 @@ class Lox:
             self.had_error = False
 
     def run(self, source: str):
-        scanner = Scanner(source)
+        scanner = Scanner(source, interpreter=self)
         tokens: list[Token] = scanner.scan_tokens()
 
         for token in tokens:
