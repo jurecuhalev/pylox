@@ -5,8 +5,8 @@ from tokens import Token
 
 class Expr:
     def accept(self, visitor):
-        func = getattr(visitor, f"visit{self.__class__.__name__}")
-        return func()
+        func = getattr(visitor, f"visit_{self.__class__.__name__.lower()}")
+        return func(self)
 
 
 class Binary(Expr):
@@ -22,7 +22,7 @@ class Grouping(Expr):
 
 
 class Literal(Expr):
-    def __int__(self, value: any):
+    def __init__(self, value: any):
         self.value = value
 
 
@@ -30,3 +30,7 @@ class Unary(Expr):
     def __init__(self, operator: Token, right: Expr):
         self.operator = operator
         self.right = right
+
+
+class Visitor:
+    pass
