@@ -1,4 +1,4 @@
-from abc import ABC
+from typing import Any
 
 from tokens import Token
 
@@ -22,7 +22,7 @@ class Grouping(Expr):
 
 
 class Literal(Expr):
-    def __init__(self, value: any):
+    def __init__(self, value: Any):
         self.value = value
 
 
