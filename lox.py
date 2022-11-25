@@ -1,7 +1,7 @@
 import click
 
 from scanner import Scanner
-from tokens import Token
+from tokens import Token, TokenType
 
 
 class Lox:
@@ -28,8 +28,14 @@ class Lox:
         for token in tokens:
             print(token)
 
-    def error(self, line, message):
+    def error_line(self, line, message):
         self.report(line, "", message)
+
+    def error_token(self, token: Token, message):
+        if token.type == TokenType.EOF:
+            self.report(token.line, " at end", message)
+        else:
+            self.report(token.line, f" at '{token.lexeme}'", message)
 
     def report(self, line, where, message):
         print(f"[line {line}] Error {where}: {message}")
