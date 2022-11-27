@@ -2,6 +2,7 @@ import expr
 from tokens import Token, TokenType
 
 
+# noinspection PyShadowingNames
 class AstPrinter(expr.Expr):
     def print(self, expr: expr.Expr):
         return expr.accept(self)

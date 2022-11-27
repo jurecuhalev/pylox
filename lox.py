@@ -1,7 +1,12 @@
+from __future__ import annotations
 from typing import Optional
 
 import click
 
+from ast_printer import AstPrinter
+
+# noinspection PyCompatibility
+from parser import Parser
 from scanner import Scanner
 from tokens import Token, TokenType
 
@@ -26,13 +31,18 @@ class Lox:
     def run(self, source: str):
         scanner = Scanner(source, interpreter=self)
         tokens: list[Token] = scanner.scan_tokens()
+        parser = Parser(tokens, interpreter=self)
+        expression = parser.parse()
 
-        for token in tokens:
-            print(token)
+        if self.had_error:
+            return
+
+        print(AstPrinter().print(expression))
 
     def error(
         self, line: Optional[int] = None, token: Optional[Token] = None, message=""
     ):
+        self.had_error = True
         if not token:
             self.report(line, "", message)
         elif token.type == TokenType.EOF:

@@ -1,4 +1,9 @@
+from __future__ import annotations
 from tokens import TokenType, Token
+import typing
+
+if typing.TYPE_CHECKING:
+    import lox
 
 KEYWORDS = {
     "and": TokenType.AND,
@@ -27,7 +32,7 @@ class Scanner:
     current = 0
     line = 1
 
-    def __init__(self, source: str, interpreter):
+    def __init__(self, source: str, interpreter: lox.Lox):
         self.source = source
         self.interpreter = interpreter
 
@@ -98,7 +103,9 @@ class Scanner:
                 elif self._is_alpha(char):
                     self._identifier()
                 else:
-                    self.interpreter.error(self.line, "Unexpected character.")
+                    self.interpreter.error(
+                        line=self.line, message="Unexpected character."
+                    )
 
     def _is_at_end(self):
         return self.current >= len(self.source)

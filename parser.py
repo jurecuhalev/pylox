@@ -1,21 +1,31 @@
 from __future__ import annotations
 
+import typing
+
 from tokens import Token, TokenType
 from expr import Binary, Unary, Literal, Grouping
-import lox
+
+if typing.TYPE_CHECKING:
+    import lox
 
 
 class ParseException(Exception):
     def __init__(self, token, message, interpreter: lox.Lox):
-        interpreter.error(token, message)
+        interpreter.error(token=token, message=message)
 
 
 class Parser:
     current = 0
 
-    def __init__(self, tokens: list[Token], interpreter):
+    def __init__(self, tokens: list[Token], interpreter: lox.Lox):
         self.tokens = tokens
         self.interpreter = interpreter
+
+    def parse(self):
+        try:
+            return self.expression()
+        except ParseException:
+            return None
 
     def expression(self):
         return self.equality()
@@ -89,6 +99,8 @@ class Parser:
             self.consume(TokenType.RIGHT_PAREN, "Expect ')' after Expression.")
             return Grouping(expr)
 
+        raise ParseException(self.peek(), "Expect expression.", self.interpreter)
+
     def match(self, *types: TokenType) -> bool:
         for _type in types:
             if self.check(_type):
@@ -123,3 +135,24 @@ class Parser:
 
     def previous(self):
         return self.tokens[self.current - 1]
+
+    def synchronize(self):
+        self.advance()
+
+        while not self.is_at_end():
+            if self.previous().type != TokenType.SEMICOLON:
+                return
+
+            if self.peek().type in [
+                TokenType.CLASS,
+                TokenType.FUN,
+                TokenType.VAR,
+                TokenType.FOR,
+                TokenType.IF,
+                TokenType.WHILE,
+                TokenType.PRINT,
+                TokenType.RETURN,
+            ]:
+                return
+
+            self.advance()
