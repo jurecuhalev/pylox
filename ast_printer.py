@@ -30,15 +30,10 @@ class AstPrinter(expr.Expr):
         return builder
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     expression = expr.Binary(
-        expr.Unary(
-            Token(TokenType.MINUS, "-", None, 1),
-            expr.Literal(123)
-        ),
+        expr.Unary(Token(TokenType.MINUS, "-", None, 1), expr.Literal(123)),
         Token(TokenType.STAR, "*", None, 1),
-        expr.Grouping(
-            expr.Literal(45.67)
-        )
+        expr.Grouping(expr.Literal(45.67)),
     )
     print(AstPrinter().print(expression))

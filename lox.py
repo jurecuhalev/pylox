@@ -1,3 +1,5 @@
+from typing import Optional
+
 import click
 
 from scanner import Scanner
@@ -28,11 +30,12 @@ class Lox:
         for token in tokens:
             print(token)
 
-    def error_line(self, line, message):
-        self.report(line, "", message)
-
-    def error_token(self, token: Token, message):
-        if token.type == TokenType.EOF:
+    def error(
+        self, line: Optional[int] = None, token: Optional[Token] = None, message=""
+    ):
+        if not token:
+            self.report(line, "", message)
+        elif token.type == TokenType.EOF:
             self.report(token.line, " at end", message)
         else:
             self.report(token.line, f" at '{token.lexeme}'", message)

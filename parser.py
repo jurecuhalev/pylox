@@ -1,11 +1,19 @@
+from __future__ import annotations
+
 from tokens import Token, TokenType
 from expr import Binary, Unary, Literal, Grouping
+import lox
+
+
+class ParseException(Exception):
+    def __init__(self, token, message, interpreter: lox.Lox):
+        interpreter.error(token, message)
 
 
 class Parser:
     current = 0
 
-    def __init__(self, tokens: [Token], interpreter):
+    def __init__(self, tokens: list[Token], interpreter):
         self.tokens = tokens
         self.interpreter = interpreter
 
@@ -25,7 +33,12 @@ class Parser:
     def comparison(self):
         expr = self.term()
 
-        while self.match(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL):
+        while self.match(
+            TokenType.GREATER,
+            TokenType.GREATER_EQUAL,
+            TokenType.LESS,
+            TokenType.LESS_EQUAL,
+        ):
             operator = self.previous()
             right = self.term()
             expr = Binary(expr, operator, right)
@@ -76,7 +89,7 @@ class Parser:
             self.consume(TokenType.RIGHT_PAREN, "Expect ')' after Expression.")
             return Grouping(expr)
 
-    def match(self, *types: [TokenType]) -> bool:
+    def match(self, *types: TokenType) -> bool:
         for _type in types:
             if self.check(_type):
                 self.advance()
@@ -88,13 +101,13 @@ class Parser:
         if self.check(token_type):
             return self.advance()
 
-        raise self.interpreter.error_token(self.peek(), message)
+        raise ParseException(self.peek(), message, self.interpreter)
 
     def check(self, token_type: TokenType):
         if self.is_at_end():
             return False
 
-        return self.peek().token_type == token_type
+        return self.peek().type == token_type
 
     def advance(self) -> Token:
         if not self.is_at_end():
@@ -103,7 +116,7 @@ class Parser:
         return self.previous()
 
     def is_at_end(self):
-        return self.peek().token_type == TokenType.EOF
+        return self.peek().type == TokenType.EOF
 
     def peek(self):
         return self.tokens[self.current]
