@@ -1,9 +1,11 @@
 from __future__ import annotations
 from typing import Optional
+import sys
 
 import click
 
 from ast_printer import AstPrinter
+from interpreter import Interpreter
 
 # noinspection PyCompatibility
 from parser import Parser
@@ -13,6 +15,10 @@ from tokens import Token, TokenType
 
 class Lox:
     had_error = False
+    had_runtime_error = False
+
+    def __init__(self):
+        self.interpreter = Interpreter(interpreter=self)
 
     def run_file(self, script):
         with open(script) as f:
@@ -21,6 +27,8 @@ class Lox:
         self.run(source)
         if self.had_error:
             exit(65)
+        if self.had_runtime_error:
+            exit(70)
 
     def run_prompt(self):
         while True:
@@ -37,7 +45,8 @@ class Lox:
         if self.had_error:
             return
 
-        print(AstPrinter().print(expression))
+        # print(AstPrinter().print(expression))
+        self.interpreter.interpret(expression)
 
     def error(
         self, line: Optional[int] = None, token: Optional[Token] = None, message=""
@@ -49,6 +58,10 @@ class Lox:
             self.report(token.line, " at end", message)
         else:
             self.report(token.line, f" at '{token.lexeme}'", message)
+
+    def runtime_error(self, error):
+        print(f"{error.message}\n[line {error.token.line}]", file=sys.stderr)
+        self.had_runtime_error = True
 
     def report(self, line, where, message):
         print(f"[line {line}] Error {where}: {message}")

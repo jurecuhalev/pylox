@@ -26,15 +26,13 @@ KEYWORDS = {
 
 
 class Scanner:
-    source: str
-    tokens: list[Token] = []
-    start = 0
-    current = 0
-    line = 1
-
     def __init__(self, source: str, interpreter: lox.Lox):
         self.source = source
         self.interpreter = interpreter
+        self.tokens = []
+        self.start = 0
+        self.current = 0
+        self.line = 1
 
     def scan_tokens(self) -> list[Token]:
         while not self._is_at_end():
