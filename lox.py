@@ -40,13 +40,14 @@ class Lox:
         scanner = Scanner(source, interpreter=self)
         tokens: list[Token] = scanner.scan_tokens()
         parser = Parser(tokens, interpreter=self)
-        expression = parser.parse()
+        # expression = parser.parse()
+        statements = parser.parse()
 
         if self.had_error:
             return
 
         # print(AstPrinter().print(expression))
-        self.interpreter.interpret(expression)
+        self.interpreter.interpret(statements)
 
     def error(
         self, line: Optional[int] = None, token: Optional[Token] = None, message=""

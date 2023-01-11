@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import typing
 
+import stmt
 from tokens import Token, TokenType
 from expr import Binary, Unary, Literal, Grouping
 
@@ -22,13 +23,30 @@ class Parser:
         self.interpreter = interpreter
 
     def parse(self):
-        try:
-            return self.expression()
-        except ParseException:
-            return None
+        statements = []
+        while not self.is_at_end():
+            statements.append(self.statement())
+
+        return statements
 
     def expression(self):
         return self.equality()
+
+    def statement(self):
+        if self.match(TokenType.PRINT):
+            return self.print_statement()
+
+        return self.expression_statement()
+
+    def print_statement(self):
+        value = self.expression()
+        self.consume(TokenType.SEMICOLON, "Expect ';' after value.")
+        return stmt.Print(value)
+
+    def expression_statement(self):
+        expr = self.expression()
+        self.consume(TokenType.SEMICOLON, "Expect ';' after value.")
+        return stmt.Expression(expr)
 
     def equality(self):
         expr = self.comparison()

@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import typing
 import expr
+import stmt
 import tokens
-from expr import Visitor
+from visitor import Visitor
 from tokens import TokenType
 
 if typing.TYPE_CHECKING:
@@ -24,20 +25,20 @@ class Interpreter(Visitor):
     def __init__(self, interpreter: lox.Lox):
         self.interpreter = interpreter
 
-    def interpret(self, expression: expr.Expr):
+    def interpret(self, statements: list[stmt.Stmt]):
         try:
-            value = self.evaluate(expression)
-            print(self.stringify(value))
+            for statement in statements:
+                self.execute(statement)
         except LoxRuntimeError as error:
             self.interpreter.runtime_error(error)
 
-    def visit_literal(self, expr: expr.Literal):
+    def visit_literal_expr(self, expr: expr.Literal):
         return expr.value
 
-    def visit_grouping(self, expr: expr.Grouping):
+    def visit_grouping_expr(self, expr: expr.Grouping):
         return self.evaluate(expr.expression)
 
-    def visit_unary(self, expr: expr.Unary):
+    def visit_unary_expr(self, expr: expr.Unary):
         right = self.evaluate(expr.right)
 
         match expr.operator.type:
@@ -86,7 +87,17 @@ class Interpreter(Visitor):
     def evaluate(self, expr: expr.Expr):
         return expr.accept(self)
 
-    def visit_binary(self, expr: expr.Binary):
+    def execute(self, stmt: stmt.Stmt):
+        stmt.accept(self)
+
+    def visit_expression(self, stmt: stmt.Stmt):
+        self.evaluate(stmt.expression)
+
+    def visit_print_stmt(self, stmt: stmt.Stmt):
+        value = self.evaluate(stmt.expression)
+        print(self.stringify(value))
+
+    def visit_binary_expr(self, expr: expr.Binary):
         left = self.evaluate(expr.left)
         right = self.evaluate(expr.right)
 

@@ -179,7 +179,7 @@ class Scanner:
         while self._is_alphanumeric(self._peek()):
             self._advance()
 
-        text = self.source[self.start + 1 : self.current]
+        text = self.source[self.start : self.current]
         token_type = KEYWORDS.get(text, TokenType.IDENTIFIER)
 
         self._add_token(token_type)
