@@ -4,26 +4,19 @@ import typing
 import expr
 import stmt
 import tokens
+from environment import Environment
+from exceptions import LoxRuntimeError
 from visitor import Visitor
 from tokens import TokenType
 
 if typing.TYPE_CHECKING:
     import lox
 
-
-class LoxRuntimeError(Exception):
-    def __init__(self, token, message):
-        self.token = token
-        self.message = message
-
-
-# todo: LoxRuntimeError
-
-
 # noinspection PyShadowingNames
 class Interpreter(Visitor):
     def __init__(self, interpreter: lox.Lox):
         self.interpreter = interpreter
+        self.environment = Environment()
 
     def interpret(self, statements: list[stmt.Stmt]):
         try:
@@ -47,6 +40,9 @@ class Interpreter(Visitor):
                 return -float(right)
             case TokenType.BANG:
                 return not self.is_truthy(right)
+
+    def visit_variable_expr(self, expr: expr.Variable):
+        return self.environment.get(expr.name.lexeme)
 
     def check_number_operand(self, operator: tokens.Token, operand):
         if isinstance(operand, float):
@@ -96,6 +92,13 @@ class Interpreter(Visitor):
     def visit_print_stmt(self, stmt: stmt.Stmt):
         value = self.evaluate(stmt.expression)
         print(self.stringify(value))
+
+    def visit_var_stmt(self, stmt: stmt.Var):
+        value = None
+        if stmt.initializer is not None:
+            value = self.evaluate(stmt.initializer)
+
+        self.environment.define(stmt.name.lexeme, value)
 
     def visit_binary_expr(self, expr: expr.Binary):
         left = self.evaluate(expr.left)

@@ -2,6 +2,7 @@ from abc import abstractmethod
 from typing import Any
 
 from expr import Expr
+from tokens import Token
 
 
 class Stmt:
@@ -26,3 +27,13 @@ class Print(Stmt):
 
     def accept(self, visitor):
         return visitor.visit_print_stmt(self)
+
+class Var(Stmt):
+    initializer: Expr = None
+    name: Token = None
+    def __init__(self, name: Token, initializer: Expr):
+        self.name = name
+        self.initializer = initializer
+
+    def accept(self, visitor):
+        return visitor.visit_var_stmt(self)

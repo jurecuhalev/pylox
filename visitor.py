@@ -69,9 +69,9 @@ class Visitor:
         def visit_print_stmt(self, stmt: stmt.Print):
             pass
 
-        # @abstractmethod
-        # def visit_var_stmt(self, stmt: stmt.Var):
-        #     pass
+        @abstractmethod
+        def visit_var_stmt(self, stmt: stmt.Var):
+            pass
 
         # @abstractmethod
         # def visit_block_stmt(self, stmt: Block):
