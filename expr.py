@@ -1,10 +1,13 @@
+from abc import ABC, abstractmethod
 from typing import Any
 
 from tokens import Token
 
 
-class Expr:
-    pass
+class Expr(ABC):
+    @abstractmethod
+    def accept(self, visitor):
+        pass
 
 
 class Binary(Expr):
@@ -49,3 +52,14 @@ class Variable(Expr):
 
     def accept(self, visitor):
         return  visitor.visit_variable_expr(self)
+
+class Assign(Expr):
+    name: Token = None
+    value: Expr = None
+
+    def __init__(self, name: Token, value: Expr):
+        self.name = name
+        self.value = value
+
+    def accept(self, visitor):
+        return  visitor.visit_assign_expr(self)

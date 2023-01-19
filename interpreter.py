@@ -86,7 +86,19 @@ class Interpreter(Visitor):
     def execute(self, stmt: stmt.Stmt):
         stmt.accept(self)
 
-    def visit_expression(self, stmt: stmt.Stmt):
+    def execute_block(self, statements, environment):
+        previous = self.environment
+        try:
+            self.environment = environment
+            for statement in statements:
+                self.execute(statement)
+        finally:
+            self.environment = previous
+
+    def visit_block_stmt(self, stmt: stmt.Block):
+        self.execute_block(stmt.statements, Environment(self.environment))
+
+    def visit_expression_stmt(self, stmt: stmt.Stmt):
         self.evaluate(stmt.expression)
 
     def visit_print_stmt(self, stmt: stmt.Stmt):
@@ -99,6 +111,11 @@ class Interpreter(Visitor):
             value = self.evaluate(stmt.initializer)
 
         self.environment.define(stmt.name.lexeme, value)
+
+    def visit_assign_expr(self, expr: expr.Assign):
+        value = self.evaluate(expr.value)
+        self.environment.assign(expr.name, value)
+        return value
 
     def visit_binary_expr(self, expr: expr.Binary):
         left = self.evaluate(expr.left)
