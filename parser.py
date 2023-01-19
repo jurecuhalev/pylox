@@ -43,6 +43,9 @@ class Parser:
             return
 
     def statement(self):
+        if self.match(TokenType.IF):
+            return self.if_statement()
+
         if self.match(TokenType.PRINT):
             return self.print_statement()
 
@@ -50,6 +53,18 @@ class Parser:
             return stmt.Block(self.block())
 
         return self.expression_statement()
+
+    def if_statement(self):
+        self.consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.")
+        condition = self.expression()
+        self.consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.")
+
+        then_branch = self.statement()
+        else_branch = None
+        if self.match(TokenType.ELSE):
+            else_branch = self.statement()
+
+        return stmt.If(condition, then_branch, else_branch)
 
     def print_statement(self):
         value = self.expression()

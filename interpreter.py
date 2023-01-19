@@ -12,6 +12,7 @@ from tokens import TokenType
 if typing.TYPE_CHECKING:
     import lox
 
+
 # noinspection PyShadowingNames
 class Interpreter(Visitor):
     def __init__(self, interpreter: lox.Lox):
@@ -101,6 +102,12 @@ class Interpreter(Visitor):
     def visit_expression_stmt(self, stmt: stmt.Stmt):
         self.evaluate(stmt.expression)
 
+    def visit_if_stmt(self, stmt: stmt.If):
+        if self.is_truthy(self.evaluate(stmt.condition)):
+            self.execute(stmt.then_branch)
+        elif stmt.else_branch is not None:
+            self.execute(stmt.else_branch)
+        
     def visit_print_stmt(self, stmt: stmt.Stmt):
         value = self.evaluate(stmt.expression)
         print(self.stringify(value))
