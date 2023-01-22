@@ -55,7 +55,7 @@ class Interpreter(Visitor):
                 return not self.is_truthy(right)
 
     def visit_variable_expr(self, expr: expr.Variable):
-        return self.environment.get(expr.name.lexeme)
+        return self.environment.get(expr.name)
 
     def check_number_operand(self, operator: tokens.Token, operand):
         if isinstance(operand, float):
