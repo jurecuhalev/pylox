@@ -4,7 +4,7 @@ import typing
 
 import stmt
 from tokens import Token, TokenType
-from expr import Binary, Unary, Literal, Grouping, Variable, Assign
+from expr import Binary, Unary, Literal, Grouping, Variable, Assign, Logical
 
 if typing.TYPE_CHECKING:
     import lox
@@ -95,7 +95,8 @@ class Parser:
         return statements
 
     def assignment(self):
-        expr = self.equality()
+        expr = self._or()
+
         if self.match(TokenType.EQUAL):
             equals = self.previous()
             value = self.assignment()
@@ -105,6 +106,26 @@ class Parser:
                 return Assign(name, value)
 
             self.interpreter.error(token=equals, message="Invalid assignment target.")
+
+        return expr
+
+    def _or(self):
+        expr = self._and()
+
+        while self.match(TokenType.OR):
+            operator = self.previous()
+            right = self._and()
+            expr = Logical(expr, operator, right)
+
+        return expr
+
+    def _and(self):
+        expr = self.equality()
+
+        while self.match(TokenType.AND):
+            operator = self.previous()
+            right = self.equality()
+            expr = Logical(expr, operator, right)
 
         return expr
 

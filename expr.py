@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Optional
 
 from tokens import Token
 
@@ -63,3 +63,16 @@ class Assign(Expr):
 
     def accept(self, visitor):
         return  visitor.visit_assign_expr(self)
+
+class Logical(Expr):
+    left: Optional[Expr] = None
+    operator: Optional[Token] = None
+    right: Optional[Expr] = None
+
+    def __init__(self, left: Expr, operator: Token, right: Expr):
+        self.left = left
+        self.operator = operator
+        self.right = right
+
+    def accept(self, visitor):
+        return visitor.visit_logical_expr(self)
