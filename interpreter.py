@@ -119,7 +119,7 @@ class Interpreter(Visitor):
             self.execute(stmt.then_branch)
         elif stmt.else_branch is not None:
             self.execute(stmt.else_branch)
-        
+
     def visit_print_stmt(self, stmt: stmt.Stmt):
         value = self.evaluate(stmt.expression)
         print(self.stringify(value))
@@ -130,6 +130,10 @@ class Interpreter(Visitor):
             value = self.evaluate(stmt.initializer)
 
         self.environment.define(stmt.name.lexeme, value)
+
+    def visit_while_stmt(self, stmt: stmt.While):
+        while self.is_truthy(self.evaluate(stmt.condition)):
+            self.execute(stmt.body)
 
     def visit_assign_expr(self, expr: expr.Assign):
         value = self.evaluate(expr.value)

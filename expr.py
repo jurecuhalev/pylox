@@ -44,6 +44,7 @@ class Unary(Expr):
     def accept(self, visitor):
         return visitor.visit_unary_expr(self)
 
+
 class Variable(Expr):
     name: Token = None
 
@@ -51,7 +52,8 @@ class Variable(Expr):
         self.name = name
 
     def accept(self, visitor):
-        return  visitor.visit_variable_expr(self)
+        return visitor.visit_variable_expr(self)
+
 
 class Assign(Expr):
     name: Token = None
@@ -62,7 +64,8 @@ class Assign(Expr):
         self.value = value
 
     def accept(self, visitor):
-        return  visitor.visit_assign_expr(self)
+        return visitor.visit_assign_expr(self)
+
 
 class Logical(Expr):
     left: Optional[Expr] = None

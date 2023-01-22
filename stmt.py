@@ -63,3 +63,15 @@ class If(Stmt):
 
     def accept(self, visitor):
         return visitor.visit_if_stmt(self)
+
+
+class While(Stmt):
+    condition: Optional[Expr] = None
+    body: Optional[Stmt] = None
+
+    def __init__(self, condition: Expr, body: Stmt):
+        self.condition = condition
+        self.body = body
+
+    def accept(self, visitor):
+        return visitor.visit_while_stmt(self)
